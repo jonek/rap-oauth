@@ -47,9 +47,8 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 
   private void createClientScriptingSignInButton( Composite parent ) {
     Button signInButton = new Button( parent, SWT.PUSH );
-    WidgetUtil.registerDataKeys( "cid" );
-    String cidKeyValue = getCid();
-    signInButton.setData( "cid", cidKeyValue.substring( cidKeyValue.indexOf( '=' ) + 1 ) );
+    WidgetUtil.registerDataKeys( "clientId" );
+    signInButton.setData( "clientId", Authorization.clientSecrets.getWeb().getClientId() );
     signInButton.setText( "Sign in with Google" );
     String scriptCode = ResourceLoaderUtil.readTextContent( "signInButton.js" );
     signInButton.addListener( SWT.Selection, new ClientListener( scriptCode ) );

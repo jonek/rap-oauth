@@ -31,13 +31,14 @@ var options = {
   'accesstype' : 'offline',
   // https://developers.google.com/+/api/oauth#scopes
   'scope' : 'https://www.googleapis.com/auth/plus.login',
-  'clientid' : '408610392900-25h5lhifm78r7o0spg9jarc978nqmve0.apps.googleusercontent.com',
+  'clientid' : null,
   'cookiepolicy' : 'single_host_origin'
 };
 
 var handleEvent = function( event ) {
   console.log( event.widget.getText() );
-  cid = event.widget.getData( "cid" );
+  clientId = event.widget.getData( "clientId" );
   console.log( "signing in..." );
+  options['clientid'] = clientId;
   gapi.auth.signIn( options );
 };
