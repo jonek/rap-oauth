@@ -70,7 +70,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
         String authorizationURL = new Authorization( session ).getURL( localPort );
         String authorizationJavaScriptURL = "/oauthJS";
         String googleURL = "https://www.google.com/custom";
-        String url = authorizationJavaScriptURL + "?sessionId=" + session.getId() + "&" + getCid();
+        String url = authorizationJavaScriptURL + "?sessionId=" + session.getId() + "&" + getCid() + "&clientId=" + Authorization.clientSecrets.getWeb().getClientId();
         System.out.println( "open in browser widget: " + url );
         browser.setUrl( url );
       }
@@ -90,7 +90,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
   }
 
   private String getCid() {
-    String url = getTokenCallbackURL();;
+    String url = getTokenCallbackURL();
     return url.substring( url.lastIndexOf( "cid=" ) );
   }
 

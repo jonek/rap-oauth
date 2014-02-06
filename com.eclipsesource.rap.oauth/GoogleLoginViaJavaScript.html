@@ -121,14 +121,15 @@
     'accesstype' : 'offline',
     // https://developers.google.com/+/api/oauth#scopes
     'scope' : 'https://www.googleapis.com/auth/plus.login',
-    'clientid' : '408610392900-25h5lhifm78r7o0spg9jarc978nqmve0.apps.googleusercontent.com',
+    'clientid' : null,
     'cookiepolicy' : 'single_host_origin'
   };
   
   function startFlow() {
     toggleDiv('startFlow');
     // see: https://developers.google.com/+/web/api/javascript#gapiauthsigninparameters
-    gapi.auth.signIn(options);
+    options['clientid'] = QueryParameters["clientId"];
+    gapi.auth.signIn( options );
   }
   
   </script>
