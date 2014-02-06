@@ -22,6 +22,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.gson.Gson;
 
+@SuppressWarnings("serial")
 public class OAuthCallbackServlet extends HttpServlet {
 
   private static final Gson GSON = new Gson();

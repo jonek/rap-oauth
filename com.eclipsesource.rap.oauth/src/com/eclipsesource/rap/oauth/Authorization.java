@@ -22,7 +22,6 @@ public class Authorization {
   /**
    * See https://developers.google.com/+/api/oauth#login-scopes
    */
-  private static final String PLAIN_PROFILE_SCOPE = "profile";
   private static final String FULL_PLUS_PROFILE_SCOPE = "https://www.googleapis.com/auth/plus.login";
   private static final String CLIENT_SECRETS_RESOURCE = "client_secrets.json";
 
@@ -46,7 +45,6 @@ public class Authorization {
   public Authorization( HttpSession session ) {
     state = "987654321";
     session.setAttribute( "state", state );
-
   }
 
   public String getURL( int localPort ) {
