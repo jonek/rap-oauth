@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/google-oauth-client-1.17.0-rc.jar" sourcepath="lib-sources/google-oauth-client-1.17.0-rc-sources.jar"/>
 	<classpathentry kind="lib" path="lib/google-api-client-java6-1.17.0-rc.jar" sourcepath="lib-sources/google-api-client-java6-1.17.0-rc-sources.jar"/>
 	<classpathentry kind="lib" path="lib/google-api-client-protobuf-1.17.0-rc.jar" sourcepath="lib-sources/google-api-client-protobuf-1.17.0-rc-sources.jar"/>
+	<classpathentry kind="lib" path="lib/google-api-services-plus-v1-rev118-1.17.0-rc.jar" sourcepath="lib-sources/google-api-services-plus-v1-rev118-1.17.0-rc-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

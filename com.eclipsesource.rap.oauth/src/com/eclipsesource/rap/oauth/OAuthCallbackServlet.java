@@ -27,10 +27,8 @@ public class OAuthCallbackServlet extends HttpServlet {
   private static final Gson GSON = new Gson();
   private static final HttpTransport TRANSPORT = new NetHttpTransport();
   private static final JacksonFactory JSON_FACTORY = new JacksonFactory();
-  private static final String CLIENT_ID = "XXX";
-  private static final String CLIENT_SECRET = "XXX";
 
-  private static GoogleClientSecrets clientSecrets;
+  private static GoogleClientSecrets clientSecrets = Authorization.clientSecrets;
 
   @Override
   protected void doGet( HttpServletRequest request, HttpServletResponse response )
@@ -67,13 +65,13 @@ public class OAuthCallbackServlet extends HttpServlet {
     System.out.println( "code = " + code );
 
     try {
+      String clientId = clientSecrets.getWeb().getClientId();
+      String clientSecret = clientSecrets.getWeb().getClientSecret();
       // Upgrade the authorization code into an access and refresh token.
-      // TODO [jeick] read CLIENT_ID and CLIENT_SECRET from client_secrets.json
-      // instead providing them directly!
       GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest( TRANSPORT,
                                                                                    JSON_FACTORY,
-                                                                                   CLIENT_ID,
-                                                                                   CLIENT_SECRET,
+                                                                                   clientId,
+                                                                                   clientSecret,
                                                                                    code,
                                                                                    "http://localhost:"
                                                                                        + request.getLocalPort()
@@ -82,7 +80,11 @@ public class OAuthCallbackServlet extends HttpServlet {
       // You can read the Google user ID in the ID token.
       // This sample does not use the user ID.
       GoogleIdToken idToken = tokenResponse.parseIdToken();
-      String gplusId = idToken.getPayload().getUserId();
+      System.out.println( "Google+ ID: " + idToken.getPayload().getSubject() );
+      System.out.println( "email: " + idToken.getPayload().getEmail() );
+      System.out.println( "idToken expires in "
+                          + idToken.getPayload().getExpirationTimeSeconds()
+                          + "s" );
 
       // Store the token in the session for later use.
       request.getSession().setAttribute( "token", tokenResponse.toString() );

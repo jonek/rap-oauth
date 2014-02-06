@@ -37,7 +37,8 @@ public class Authorization {
     }
   }
 
-  private static GoogleClientSecrets clientSecrets;
+  static GoogleClientSecrets clientSecrets;
+  
   // not yet unique cross-site-request-forgery see
   // https://developers.google.com/+/web/signin/redirect-uri-flow#step_2_create_an_anti-request_forgery_state_token
   private final String state;
@@ -54,7 +55,8 @@ public class Authorization {
     GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder( TRANSPORT,
                                                                                 JSON_FACTORY,
                                                                                 clientSecrets,
-                                                                                scopes ).build();
+                                                                                scopes ).setAccessType( "online" )
+      .build();
     return flow.newAuthorizationUrl()
       .setState( state )
       .setRedirectUri( "http://localhost:" + localPort + "/oauthCallback" )
