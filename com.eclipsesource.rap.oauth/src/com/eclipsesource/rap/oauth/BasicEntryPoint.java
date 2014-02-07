@@ -31,11 +31,11 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     parent.setLayout( new GridLayout( 2, false ) );
     parent.setBackground( Display.getDefault().getSystemColor( SWT.COLOR_INFO_BACKGROUND ) );
 
-    createStartBrowserWidgetFlowButton( parent );
+    createSessionInfoRow( parent );
+
     createStartServletFlowLink( parent, port );
     createClientScriptingSignInButton( parent );
-
-    createSessionInfoRow( parent );
+    createStartBrowserWidgetFlowButton( parent );
 
     createBrowserWidget( parent );
   }
@@ -52,8 +52,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     signInButton.setText( "Sign in with Google" );
     String scriptCode = ResourceLoaderUtil.readTextContent( "signInButton.js" );
     signInButton.addListener( SWT.Selection, new ClientListener( scriptCode ) );
-    Label label = new Label( parent, SWT.NONE );
-    label.setText( "<- this button uses client scripting to trigger Google's JavaScript based OAuth flow" );
+    addDescription( parent, "<- This button uses RAP client scripting to trigger Google's JavaScript based OAuth flow." );
   }
 
   @SuppressWarnings("serial")
@@ -75,6 +74,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
         browser.setUrl( url );
       }
     } );
+    addDescription( parent, "<- This Button uses RAP's browser widget to start Google's JavaScript based OAuth flow." );
   }
 
   private void createStartServletFlowLink( Composite parent, final int port ) {
@@ -83,6 +83,12 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     label.setText( "<a href=\"http://localhost:"
                    + port
                    + "/oauth\" target=\"_blank\">Link to Servlet</a>" );
+    addDescription( parent, "<- This link starts the OAuth flow in another tab using plain servlets only." );
+  }
+
+  private void addDescription(Composite parent, String descriptiveText) {
+	    Label description = new Label( parent, SWT.NONE );
+	    description.setText( descriptiveText );
   }
 
   private String getTokenCallbackURL() {
