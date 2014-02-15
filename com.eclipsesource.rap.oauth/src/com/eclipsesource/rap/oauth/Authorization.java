@@ -27,7 +27,7 @@ public class Authorization {
 
   static {
     try {
-      InputStream clientSecretsStream = BasicEntryPoint.class.getClassLoader()
+      InputStream clientSecretsStream = BasicDemoEntryPoint.class.getClassLoader()
         .getResourceAsStream( CLIENT_SECRETS_RESOURCE );
       InputStreamReader clientSecretsReader = new InputStreamReader( clientSecretsStream );
       clientSecrets = GoogleClientSecrets.load( JSON_FACTORY, clientSecretsReader );
@@ -36,8 +36,8 @@ public class Authorization {
     }
   }
 
-  static GoogleClientSecrets clientSecrets;
-  
+  public static GoogleClientSecrets clientSecrets;
+
   // not yet unique cross-site-request-forgery see
   // https://developers.google.com/+/web/signin/redirect-uri-flow#step_2_create_an_anti-request_forgery_state_token
   private final String state;

@@ -8,6 +8,7 @@ import java.security.GeneralSecurityException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.service.ServiceHandler;
@@ -31,13 +32,16 @@ import com.google.api.services.plus.model.Person;
 
 public class TokenCallbackServiceHandler implements ServiceHandler {
 
+  public static final String GOOGLE_CREDENTIAL_KEY = "googleCredential";
+  public static final String SIGNIN_NOTIFIER_KEY = "signinNotifier";
+
   private static final HttpTransport TRANSPORT = new NetHttpTransport();
   private static final JacksonFactory JSON_FACTORY = new JacksonFactory();
 
-  private final GoogleClientSecrets clientSecrets = Authorization.clientSecrets;
+  private final GoogleClientSecrets clientSecrets;
 
   public TokenCallbackServiceHandler() {
-
+    clientSecrets = Authorization.clientSecrets;
   }
 
   @Override
@@ -118,12 +122,21 @@ public class TokenCallbackServiceHandler implements ServiceHandler {
       System.out.println( "created credentials from access token: " + credential.getAccessToken() );
       System.out.println( "credentials' refresh token: " + credential.getRefreshToken() );
       System.out.println( "credentials expire in " + credential.getExpiresInSeconds() + "s" );
-
+      notifySignIn( credential );
     } catch( IOException e ) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
+  }
+
+  private void notifySignIn( GoogleCredential credential ) {
+    HttpSession session = RWT.getRequest().getSession();
+    session.setAttribute( GOOGLE_CREDENTIAL_KEY, credential );
+    Runnable signInNotifier = ( Runnable )session.getAttribute( SIGNIN_NOTIFIER_KEY );
+    Thread bgThread = new Thread( signInNotifier );
+    bgThread.setDaemon( true );
+    bgThread.start();
   }
 
   /*
@@ -165,6 +178,7 @@ public class TokenCallbackServiceHandler implements ServiceHandler {
                                                                   jsonFactory );
       System.out.println( "idToken is valid: " + verifier.verify( idToken ) );
       System.out.println( "Google+ ID: " + idToken.getPayload().getSubject() );
+      System.out.println( "email: " + idToken.getPayload().getEmail() );
     } catch( IOException e ) {
       e.printStackTrace();
     } catch( GeneralSecurityException e ) {

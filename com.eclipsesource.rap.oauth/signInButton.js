@@ -30,7 +30,7 @@ var options = {
   'approvalprompt' : 'force',
   'accesstype' : 'offline',
   // https://developers.google.com/+/api/oauth#scopes
-  'scope' : 'https://www.googleapis.com/auth/plus.login',
+  'scope' : 'profile',
   'clientid' : null,
   'cookiepolicy' : 'single_host_origin'
 };
