@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Label;
 
 import com.eclipsesource.rap.oauth.Authorization;
 import com.eclipsesource.rap.oauth.ResourceLoaderUtil;
+import com.eclipsesource.rap.oauth.demo.AsyncMessageDisplay.MessageDisplay;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -51,38 +52,64 @@ public class SigninDemoEntryPoint extends AbstractEntryPoint {
     startSignInListener( parent.getDisplay() );
   }
 
-  private void startSignInListener( final Display display ) {
+  private void startSignInListener( Display display ) {
     final ServerPushSession pushSession = new ServerPushSession();
-    Runnable bgRunnable = new Runnable() {
+    pushSession.start();
+    HttpSession session = RWT.getRequest().getSession();
+    session.setAttribute( SIGNIN_NOTIFIER_KEY,
+                          createSuccessfullSignInHandler( display, pushSession ) );
+    session.setAttribute( ASYNC_MESSAGE_DISPLAY_KEY, createAsyncMessageDisplay( display ) );
+  }
+
+  private Object createSuccessfullSignInHandler( final Display display,
+                                                 final ServerPushSession pushSession )
+  {
+    return new AsyncBackgroundJob( display, new Runnable() {
 
       @Override
       public void run() {
-
-        display.asyncExec( new Runnable() {
-
-          @Override
-          public void run() {
-            if( !info.isDisposed() ) {
-              // update the UI
-              signInButton.dispose();
-              Person me = getAuthenticatedPersion();
-              info.setText( "<i>"
-                            + me.getDisplayName()
-                            + "</i>, you successfully signed in with RAP!"
-              // + "<br/><br/>"
-              // + getFullProfile( me )
-              );
-              info.getParent().layout();
-              // close push session when finished
-              pushSession.stop();
-            }
-          }
-
-        } );
+        disposeSignInButton();
+        if( !info.isDisposed() && getCredentialFromSession() != null ) {
+          // update the UI
+          Person me = getAuthenticatedPerson();
+          log( me );
+          info.setText( "<i>" + me.getDisplayName() + "</i>, you successfully signed in with RAP!" );
+          info.getParent().layout();
+          // close push session when finished
+          pushSession.stop();
+        }
       }
-    };
-    pushSession.start();
-    RWT.getRequest().getSession().setAttribute( SIGNIN_NOTIFIER_KEY, bgRunnable );
+
+      private void log( Person me ) {
+        try {
+          System.out.println( me.toPrettyString() );
+        } catch( IOException e ) {
+          System.err.println( "Could not print full profile: " + e );
+        }
+      }
+
+    } );
+  }
+
+  private void disposeSignInButton() {
+    if( !signInButton.isDisposed() ) {
+      signInButton.dispose();
+    }
+  }
+
+  private Object createAsyncMessageDisplay( final Display display ) {
+    return new AsyncMessageDisplay( display, new MessageDisplay() {
+
+      @Override
+      public void display( String message ) {
+        disposeSignInButton();
+        if( !info.isDisposed() ) {
+          info.setText( "<i>" + message + "</i>" );
+          info.getParent().layout();
+        }
+      }
+
+    } );
   }
 
   private String getFullProfile( Person me ) {
@@ -98,10 +125,9 @@ public class SigninDemoEntryPoint extends AbstractEntryPoint {
     return result.toString();
   }
 
-  private Person getAuthenticatedPersion() {
+  private Person getAuthenticatedPerson() {
     Person result = null;
-    HttpSession session = RWT.getRequest().getSession();
-    GoogleCredential credential = ( GoogleCredential )session.getAttribute( GOOGLE_CREDENTIAL_KEY );
+    GoogleCredential credential = getCredentialFromSession();
     Plus plus = new Plus.Builder( TRANSPORT, JSON_FACTORY, credential ).setApplicationName( APPLICATION_NAME )
       .build();
     try {
@@ -111,6 +137,12 @@ public class SigninDemoEntryPoint extends AbstractEntryPoint {
       e.printStackTrace();
     }
     return result;
+  }
+
+  private GoogleCredential getCredentialFromSession() {
+    HttpSession session = RWT.getRequest().getSession();
+    GoogleCredential credential = ( GoogleCredential )session.getAttribute( GOOGLE_CREDENTIAL_KEY );
+    return credential;
   }
 
   private void prepareParent( Composite parent ) {

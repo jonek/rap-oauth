@@ -13,6 +13,8 @@ import javax.servlet.http.HttpSession;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.service.ServiceHandler;
 
+import com.eclipsesource.rap.oauth.demo.AsyncBackgroundJob;
+import com.eclipsesource.rap.oauth.demo.AsyncMessageDisplay;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.CredentialRefreshListener;
 import com.google.api.client.auth.oauth2.TokenErrorResponse;
@@ -34,6 +36,7 @@ public class TokenCallbackServiceHandler implements ServiceHandler {
 
   public static final String GOOGLE_CREDENTIAL_KEY = "googleCredential";
   public static final String SIGNIN_NOTIFIER_KEY = "signinNotifier";
+  public static final String ASYNC_MESSAGE_DISPLAY_KEY = "asyncMessageDisplay";
 
   private static final HttpTransport TRANSPORT = new NetHttpTransport();
   private static final JacksonFactory JSON_FACTORY = new JacksonFactory();
@@ -71,6 +74,7 @@ public class TokenCallbackServiceHandler implements ServiceHandler {
       String code = request.getParameter( "code" );
       if( code != null && !code.isEmpty() && !code.equals( "undefined" ) ) {
         System.out.println( "code=" + code );
+        displayAsync( "signing in..." );
         handleCode( code );
         out.println( "callback Code OK" );
       } else {
@@ -133,10 +137,16 @@ public class TokenCallbackServiceHandler implements ServiceHandler {
   private void notifySignIn( GoogleCredential credential ) {
     HttpSession session = RWT.getRequest().getSession();
     session.setAttribute( GOOGLE_CREDENTIAL_KEY, credential );
-    Runnable signInNotifier = ( Runnable )session.getAttribute( SIGNIN_NOTIFIER_KEY );
-    Thread bgThread = new Thread( signInNotifier );
-    bgThread.setDaemon( true );
-    bgThread.start();
+    AsyncBackgroundJob signInNotifier = ( AsyncBackgroundJob )session.getAttribute( SIGNIN_NOTIFIER_KEY );
+    signInNotifier.start();
+  }
+
+  private void displayAsync( String message ) {
+    HttpSession session = RWT.getRequest().getSession();
+    AsyncMessageDisplay asyncMessageDisplay = ( AsyncMessageDisplay )session.getAttribute( ASYNC_MESSAGE_DISPLAY_KEY );
+    if( asyncMessageDisplay != null ) {
+      asyncMessageDisplay.showAsync( message );
+    }
   }
 
   /*

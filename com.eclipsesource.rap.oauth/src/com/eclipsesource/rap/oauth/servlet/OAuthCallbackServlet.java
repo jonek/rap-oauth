@@ -1,5 +1,5 @@
 
-package com.eclipsesource.rap.oauth;
+package com.eclipsesource.rap.oauth.servlet;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.eclipsesource.rap.oauth.Authorization;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;

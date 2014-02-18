@@ -11,6 +11,9 @@ import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+import com.eclipsesource.rap.oauth.servlet.ConnectServlet;
+import com.eclipsesource.rap.oauth.servlet.OAuthCallbackServlet;
+
 public class Activator implements BundleActivator {
 
   private HttpServiceTracker tracker;

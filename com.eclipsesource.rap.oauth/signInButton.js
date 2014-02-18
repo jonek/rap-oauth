@@ -27,6 +27,7 @@ function sendRequest( code ) {
 
 var options = {
   'callback' : loginFinished,
+  // https://developers.google.com/+/web/signin/reference#sign-in_button_attributes
   'approvalprompt' : 'force',
   'accesstype' : 'offline',
   // https://developers.google.com/+/api/oauth#scopes
